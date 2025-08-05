@@ -396,17 +396,18 @@ import { getCutSheepInventory, getHistorySheepInventory, bigSheepManage } from '
 			 * 添加到羊羔购物车
 			 */ 
 			addConfirm(){
-				// 判断输入框是否有值
-				if(this.maleCount <= 0 && this.femaleCount <= 0){
-					uni.$u.toast('请至少选择一只羊')
+				// 1.校验
+				// 校验是否为数字
+				if(isNaN(this.maleCount) || isNaN(this.femaleCount)){
+					uni.$u.toast('请输入合法的数字')
 					return
 				}
-				// 校验是否为大于0的数字
-				if(!this.toNumber(this.maleCount) || !this.toNumber(this.femaleCount)){
-					uni.$u.toast('请输入正确的数字')
+				// 判断输入框值是都大于等于0
+				if(this.maleCount < 0 || this.femaleCount < 0){
+					uni.$u.toast('羊库存最小为0')
 					return
 				}
-				// 判断购物车是否已存在该品类
+				// 2.判断购物车是否已存在该品类
 				let index = this.cartList.findIndex(it => it.categoryId === this.currentItem.categoryId)
 				if(index !== -1){
 					// 如果存在，更新数量
