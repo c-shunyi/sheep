@@ -505,8 +505,6 @@ export default {
     bottom() {
       return getApp().globalData.systemInfo.safeAreaInsets.bottom;
     },
-
-    // 计算羊羔总数
     sheepNum() {
       let num = 0;
       this.cartList.forEach((item) => {
@@ -535,6 +533,11 @@ export default {
     this.init(options);
   },
   methods: {
+    /**
+     * @description 初始化
+     * @author c_shunyi
+     * @created 2025-08-05 17:02:55
+     */
     init(options) {
       // 初始化数据
       // 获取页面类型
@@ -602,12 +605,20 @@ export default {
           });
       }
     },
+    /**
+     * @description 切换tab
+     * @author c_shunyi
+     * @created 2025-08-05 17:03:23
+     */
     selectTab(type) {
       // 切换tab
       this.tabOpt = type;
       // 重新查询数据
       this.queryList(1, 10);
     },
+    /**
+     * 提交
+     */
     submit() {
       // 1.校验数据
       if (this.cartList.length === 0) {
@@ -783,15 +794,18 @@ export default {
       }
     },
     /**
-     * 	根据名字搜索
-     * @param e 搜索框输入内容
+     * @description 根据名字搜索
+     * @author c_shunyi
+     * @created 2025-08-05 17:06:12
      */
     search(e) {
       console.log("e", e);
       this.queryList(1, 10);
     },
     /**
-     * 关闭弹窗
+     * @description 关闭操作弹窗
+     * @author c_shunyi
+     * @created 2025-08-05 17:05:39
      */
     itemClose() {
       // 关闭选择品类弹窗
@@ -800,7 +814,12 @@ export default {
       this.maleCount = 0;
       this.femaleCount = 0;
     },
-    // 字符串变为数字
+    /**
+     * @description 字符转数字
+     * @return 空值、非数字字符串转0、数字字符串转数字
+     * @author c_shunyi
+     * @created 2025-08-05 17:04:34
+     */
     toNumber(str) {
       if (str !== "" && str !== null && str !== undefined) return Number(str);
       else return 0;
