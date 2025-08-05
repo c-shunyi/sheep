@@ -1,0 +1,113 @@
+{
+	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+		{
+			"path": "pages/tabbar/home/index",
+			"style": {
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/tabbar/news/index",
+			"style": {
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/tabbar/user/index",
+			"style": {
+				"navigationStyle": "custom"
+			}
+		}
+	],
+	"subPackages": [{
+			"root": "pages/login",
+			"pages": [{
+				"path": "index",
+				"style": {
+					"navigationStyle": "custom"
+				}
+			}]
+		},{
+			"root": "pages/home",
+			"pages": [{
+				"path": "register",
+				"style": {
+					"navigationStyle": "custom"
+				}
+			}]
+		},{
+			"root": "pages/home",
+			"pages": [{
+				"path": "bigSheepRegister",
+				"style": {
+					"navigationStyle": "custom"
+				}
+			}]
+		},{
+			"root": "pages/news",
+			"pages": [{
+				"path": "particulars",
+				"style": {
+					"navigationStyle": "custom"
+				}
+			}]
+		},{
+			"root": "pages/user",
+			"pages": [{
+				"path": "authentication",
+				"style": {
+					"navigationStyle": "custom"
+				}
+			},{
+				"path": "record",
+				"style": {
+					"navigationStyle": "custom"
+				}
+			},{
+				"path": "quantity",
+				"style": {
+					"navigationStyle": "custom"
+				}
+			},{
+				"path": "feedback",
+				"style": {
+					"navigationStyle": "custom"
+				}
+			},{
+				"path": "userFeedback",
+				"style": {
+					"navigationStyle": "custom"
+				}
+			}]
+		}
+	],
+	"globalStyle": {
+		"navigationStyle": "custom"
+	},
+	"tabBar": {
+		"color": "#7c7c7e",
+		"selectedColor": "#7fb57a",
+		"borderStyle": "white",
+		"backgroundColor": "#ffffff",
+		"list": [{
+				"pagePath": "pages/tabbar/home/index",
+				"iconPath": "/static/tabbarImg/home.png",
+				"selectedIconPath": "/static/tabbarImg/homeSelecte.png",
+				"text": "首页"
+			},
+			{
+				"pagePath": "pages/tabbar/news/index",
+				"iconPath": "/static/tabbarImg/news.png",
+				"selectedIconPath": "/static/tabbarImg/newsSelecte.png",
+				"text": "消息"
+			},
+			{
+				"pagePath": "pages/tabbar/user/index",
+				"iconPath": "/static/tabbarImg/user.png",
+				"selectedIconPath": "/static/tabbarImg/userSelecte.png",
+				"text": "我的"
+			}
+		]
+	},
+	"uniIdRouter": {}
+}
