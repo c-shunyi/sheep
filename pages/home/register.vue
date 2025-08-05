@@ -4,7 +4,6 @@
 			<template #top>
 				<navbar title="羔羊添加登记" v-if="type == 'add'"></navbar>
 				<navbar title="羔羊减少登记" v-if="type == 'lessen'"></navbar>
-				<navbar title="大羊消息登记" v-if="type == 'bigSheep'"></navbar>
 				<view class="u-px-24 u-p-t-24">
 					<u-search placeholder="请输入内容" v-model="searchContent" :actionStyle="actionStyle"></u-search>
 					<view class="tab u-m-t-32 flex flex-between u-p-t-20 c-666 font-400 u-font-30" :class="tabOpt == 'left'? 'tab-left' : 'tab-right'">
@@ -22,7 +21,7 @@
 					<view class="u-p-24 flex align-center b-radius-20 u-m-b-24" style="background-color: #f6f6f8;"
 					v-for="(item,index) in registerList" :key="index"
 					@tap="clickItem(item)">
-						<u--image :src="item.image" width="108rpx"  height="108rpx" radius="8rpx"></u--image>
+						<u--image :src="item.categoryImage" width="108rpx"  height="108rpx" radius="8rpx"></u--image>
 						<view class="u-m-l-24 flex-1">
 							<view class="u-font-32 c-333 u-m-b-24">
 								{{item.categoryName}}
@@ -59,15 +58,15 @@
 						</view>
 						<view class="flex flex-center">
 							<view class="c-ED6A0C u-font-32 u-m-r-24">
-								公羊:{{maleCountTotal}}只
+								公羊:{{toNumber(maleCountTotal)}}只
 							</view>
 							<view class="c-ED6A0C u-font-32">
-								母羊:{{femaleCountTotal}}只
+								母羊:{{toNumber(femaleCountTotal)}}只
 							</view>
 						</view>
 					</view>
-					<view class="flex justify-end c-ED6A0C u-font-32">
-						共用{{motherSheepCount}}只母羊生产
+					<view v-if="type == 'add'" class="flex justify-end c-ED6A0C u-font-32">
+						共用{{toNumber(motherSheepCount)}}只母羊生产
 					</view>
 				</view>
 				<view class="u-px-32 u-py-20 flex flex-between">
@@ -137,7 +136,7 @@
 					<u--image :src="$fullLink('icon-close2.png')" width="48rpx"  height="48rpx" @click="itemShow = false"></u--image>
 		        </view>
 				<view class="u-m-t-50 flex flex-center">
-					<u--image src="https://env-00jxtkgouyh5.normal.cloudstatic.cn/public/avatarImg.jpg" width="160rpx"  height="160rpx" radius="8rpx"></u--image>
+					<u--image :src="currentItem.categoryImage" width="160rpx"  height="160rpx" radius="8rpx"></u--image>
 				</view>
 				<view class="flex flex-center u-m-t-50">
 					<view class="flex flex-between bg-box" style="padding-left: 84rpx;padding-right: 24rpx;">
@@ -202,7 +201,7 @@
 		        </view>
 				<view class="u-p-24" style="max-height: 762rpx;overflow-y: auto;">
 					<view class="bg-F6F6F8 b-radius-16 u-p-24 flex flex-between u-m-b-24" v-for="(item, index) in cartList" :key="index">
-						<u--image src="https://env-00jxtkgouyh5.normal.cloudstatic.cn/public/avatarImg.jpg" width="108rpx"  height="108rpx"></u--image>
+						<u--image :src="item.categoryImage" width="108rpx"  height="108rpx"></u--image>
 						<view class="flex-1 u-px-24">
 							<view class="c-333 u-font-32 u-m-b-24">
 								{{item.categoryName}}
@@ -275,7 +274,7 @@
 </template>
 
 <script>
-import { getSheepInventory, addLambSheep, reduceLambSheep} from '@/common/request/api/home.js'
+import { getHistorySheepInventory, getCutSheepInventory, addLambSheep, reduceLambSheep} from '@/common/request/api/home.js'
 	export default{
 		data(){
 			return{
@@ -351,6 +350,10 @@ import { getSheepInventory, addLambSheep, reduceLambSheep} from '@/common/reques
 				// 初始化数据
 				// 获取页面类型
 				this.type = options.type || 'add'
+				// 如果是添加羊羔，则显示弹窗
+				if(this.type == "add"){
+					this.eweShow = true
+				}
 			},
 			// 确认产羔母羊数量
 			confirmDoeSheep(){
@@ -374,44 +377,48 @@ import { getSheepInventory, addLambSheep, reduceLambSheep} from '@/common/reques
 				// 	this.$refs.paging.completeByTotal(list,list.length);
 				// 	this.eweShow = true
 				// },1000)
-				// 如果是添加羊羔，则显示弹窗
-				if(this.type == "add"){
-					this.eweShow = true
-				}
+				
 				// 获取羊只品种库存列表
 				const params = {
 					type: 2,
 				}
-				getSheepInventory(params).then(res=>{
-					let list = res.data
-					console.log('获取羊只品种库存列表', list);
-					
-					// 模拟数据
-					// for(let i = 1;i <= 20;i++){
-					// 	list.push({
-					// 		categoryId:i,
-					// 		image:'https://env-00jxtkgouyh5.normal.cloudstatic.cn/public/avatarImg.jpg',
-					// 		categoryName:'羊的品类' + i,
-					// 		maleCount:uni.$u.random(1, 99999),
-					// 		femaleCount:uni.$u.random(1, 99999),
-					// 	})
-					// }
-					this.$refs.paging.completeByTotal(list,list.length);
-				}).catch(err=>{
-					this.$refs.paging.completeByError(err);
-				})
+				if(this.tabOpt == 'left'){
+					// 常用羊只品种库存列表
+					getCutSheepInventory(params).then(res=>{
+						let list = res.data.inventoryList || []
+						this.registerList = list
+						this.$refs.paging.completeByTotal(list,list.length);
+					}).catch(err=>{
+						this.$refs.paging.completeByError(err);
+					})
+				}
+				else if(this.tabOpt == 'right'){
+					// 历史羊只品种库存列表
+					getHistorySheepInventory(params).then(res=>{
+						let list = res.data.inventoryList || []
+						this.registerList = list
+						this.$refs.paging.completeByTotal(list,list.length);
+					}).catch(err=>{
+						this.$refs.paging.completeByError(err);
+					})
+				}
 			},
 			selectTab(type){
+				// 切换tab
 				this.tabOpt = type
+				// 重新查询数据
+				this.queryList(1,10)
 			},
 			submit(){
-				// 校验数据
+				// 1.校验数据
 				if(this.cartList.length === 0){
 					uni.$u.toast('请至少选择一只羊')
 					return
 				}
+				// 2.如果是添加羊羔，则需要选择产羔母羊数量
 				if(this.type === 'add'){
 					// 添加羊羔
+					// 弹出选择产羔母羊数量的弹窗
 					this.timeShow = true
 				}else if(this.type === 'lessen'){
 					// 减少羊羔
@@ -424,34 +431,42 @@ import { getSheepInventory, addLambSheep, reduceLambSheep} from '@/common/reques
 			},
 			// 添加到羊羔购物车
 			addConfirm(){
+				// 1.校验
 				// 判断输入框是否有值
 				if(this.maleCount <= 0 && this.femaleCount <= 0){
 					uni.$u.toast('请至少选择一只羊')
 					return
 				}
-				// 判断购物车是否已存在该品类
+				// 校验是否为大于0的数字
+				if(!this.toNumber(this.maleCount) || !this.toNumber(this.femaleCount)){
+					uni.$u.toast('请输入正确的数字')
+					return
+				}
+				// 2.判断购物车是否已存在该品类
 				let index = this.cartList.findIndex(it => it.categoryId === this.currentItem.categoryId)
 				if(index !== -1){
 					// 如果存在，更新数量
-					this.cartList[index].maleCount += this.maleCount
-					this.cartList[index].femaleCount += this.femaleCount
+					this.cartList[index].maleCount += this.toNumber(this.maleCount)
+					this.cartList[index].femaleCount += this.toNumber(this.femaleCount)
 				}
 				if(index == -1){
 					// 如果不存在，更新数量
 					let item = {
 						...this.currentItem,
-						maleCount:this.maleCount,
-						femaleCount:this.femaleCount
+						maleCount:this.toNumber(this.maleCount),
+						femaleCount:this.toNumber(this.femaleCount)
 					}
 					this.cartList.push(item)
 				}
-				// 清空输入框
+				// 3.清空输入框
 				this.maleCount = 0
 				this.femaleCount = 0
-				// 关闭弹窗
+				// 4.关闭弹窗
 				this.itemShow = false
 			},
-			// 确认修改羊羔
+			/**
+			 * 添加羊羔或减少羊羔
+			 */
 			changeSheep(){
 				this.timeShow = false
 				this.btnLoading = true
@@ -487,7 +502,12 @@ import { getSheepInventory, addLambSheep, reduceLambSheep} from '@/common/reques
 						this.btnLoading = false
 					})
 				}
-			}
+			},
+			// 字符串变为数字
+			toNumber(str) {
+				if(str !== '' && str !== null && str !== undefined) return Number(str)
+				else return 0
+			},
 		}
 	}
 </script>

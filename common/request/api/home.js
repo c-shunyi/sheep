@@ -26,11 +26,20 @@ export const postOrderDelivery = param => api({
 	param
 })
 /**
- * 获取羊只品种库存列表
+ * 获取常用羊只品种库存列表
  * @param {type} param 
  * @returns 羊只品种库存列表
  */
-export const getSheepInventory = param => api({
+export const getCutSheepInventory = param => api({
+	url:`/xmWeb/api/sheep/operation/cut/inventory`,
+	param
+})
+/**
+ * 获取历史羊只品种库存列表
+ * @param {type} param 
+ * @returns 羊只品种库存列表
+ */
+export const getHistorySheepInventory = param => api({
 	url:`/xmWeb/api/sheep/operation/inventory`,
 	param
 })

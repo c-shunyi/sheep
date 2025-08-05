@@ -115,7 +115,7 @@
 					<u--image :src="$fullLink('icon-close2.png')" width="48rpx"  height="48rpx" @click="itemShow = false"></u--image>
 		        </view>
 				<view class="u-m-t-50 flex flex-center">
-					<u--image src="https://env-00jxtkgouyh5.normal.cloudstatic.cn/public/avatarImg.jpg" width="160rpx"  height="160rpx" radius="8rpx"></u--image>
+					<u--image :src="currentItem.categoryImage" width="160rpx"  height="160rpx" radius="8rpx"></u--image>
 				</view>
 				<view class="flex flex-center u-m-t-50">
 					<view class="flex flex-between bg-box" style="padding-left: 84rpx;padding-right: 24rpx;">
@@ -248,7 +248,7 @@
 </template>
 
 <script>
-import { getSheepInventory, bigSheepManage } from '@/common/request/api/home.js'
+import { getCutSheepInventory, getHistorySheepInventory, bigSheepManage } from '@/common/request/api/home.js'
 	export default{
 		data(){
 			return{
@@ -326,25 +326,32 @@ import { getSheepInventory, bigSheepManage } from '@/common/request/api/home.js'
 				const params = {
 					type: 1,
 				}
-				getSheepInventory(params).then(res=>{
-					let list = res.data
-					// 模拟数据
-					// for(let i = 1;i <= 20;i++){
-					// 	list.push({
-					// 		categoryId:i,
-					// 		categoryImage:'https://env-00jxtkgouyh5.normal.cloudstatic.cn/public/avatarImg.jpg',
-					// 		categoryName:'羊的品类' + i,
-					// 		maleCount:uni.$u.random(1, 99999),
-					// 		femaleCount:uni.$u.random(1, 99999),
-					// 	})
-					// }
-					this.$refs.paging.completeByTotal(list,list.length);
-				}).catch(err=>{
-					this.$refs.paging.completeByError(err);
-				})
+				if(this.tabOpt == 'left'){
+					// 常用羊只品种库存列表
+					getCutSheepInventory(params).then(res=>{
+						let list = res.data.inventoryList || []
+						this.registerList = list
+						this.$refs.paging.completeByTotal(list,list.length);
+					}).catch(err=>{
+						this.$refs.paging.completeByError(err);
+					})
+				}
+				else if(this.tabOpt == 'right'){
+					// 历史羊只品种库存列表
+					getHistorySheepInventory(params).then(res=>{
+						let list = res.data.inventoryList || []
+						this.registerList = list
+						this.$refs.paging.completeByTotal(list,list.length);
+					}).catch(err=>{
+						this.$refs.paging.completeByError(err);
+					})
+				}
 			},
 			selectTab(type){
+				// 切换tab
 				this.tabOpt = type
+				// 重新查询数据
+				this.queryList(1,10)
 			},
 			submit(){
 				if(this.cartList.length === 0){
@@ -385,19 +392,24 @@ import { getSheepInventory, bigSheepManage } from '@/common/request/api/home.js'
 					uni.$u.toast('请至少选择一只羊')
 					return
 				}
+				// 校验是否为大于0的数字
+				if(!this.toNumber(this.maleCount) || !this.toNumber(this.femaleCount)){
+					uni.$u.toast('请输入正确的数字')
+					return
+				}
 				// 判断购物车是否已存在该品类
 				let index = this.cartList.findIndex(it => it.categoryId === this.currentItem.categoryId)
 				if(index !== -1){
 					// 如果存在，更新数量
-					this.cartList[index].maleCount = this.maleCount
-					this.cartList[index].femaleCount = this.femaleCount
+					this.cartList[index].maleCount = this.toNumber(this.maleCount)
+					this.cartList[index].femaleCount = this.toNumber(this.femaleCount)
 				}
 				if(index == -1){
 					// 如果不存在，更新数量
 					let item = {
 						...this.currentItem,
-						maleCount:this.maleCount,
-						femaleCount:this.femaleCount
+						maleCount:this.toNumber(this.maleCount),
+						femaleCount:this.toNumber(this.femaleCount)
 					}
 					this.cartList.push(item)
 				}
@@ -441,7 +453,12 @@ import { getSheepInventory, bigSheepManage } from '@/common/request/api/home.js'
 						uni.$u.toast('减少失败')
 					})
 				}
-			}
+			},
+			// 字符串变为数字
+			toNumber(str) {
+				if(str !== '' && str !== null && str !== undefined) return Number(str)
+				else return 0
+			},
 		}
 	}
 </script>

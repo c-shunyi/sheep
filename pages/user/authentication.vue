@@ -108,17 +108,13 @@
 				},
 				localdata:[
 					{
-						text:'生产性质1',
-						value:'1'
+						text:'优质母羊生产',
+						value:1
 					},
 					{
-						text:'生产性质2',
-						value:'2'
+						text:'优质肉羔生产',
+						value:2
 					},
-					{
-						text:'生产性质3',
-						value:'3'
-					}
 				],
 				labelStyle:{
 					fontSize: '36rpx',
