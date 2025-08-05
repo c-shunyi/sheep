@@ -73,6 +73,8 @@
 				},
 				newsList:[],
 				swiperList:[],
+				// 是否获取数据中
+				isGettingData:false,
 			}
 		},
 		onLoad() {
@@ -121,7 +123,7 @@
 					this.$refs.paging.completeByTotal([],0);
 				})
 				// 模拟数据(接口接口成功后删除即可)
-				this.mockData();
+				// this.mockData();
 			},
 			// 模拟数据
 			mockData(){

@@ -5,7 +5,7 @@
 			<template #top>
 				<navbar title="大羊消息登记"></navbar>
 				<view class="u-px-24 u-p-t-24">
-					<u-search placeholder="请输入内容" v-model="searchContent" :actionStyle="actionStyle"></u-search>
+					<u-search placeholder="请输入内容" v-model="searchContent" :actionStyle="actionStyle" @search="search" @custom="search"></u-search>
 					<view class="tab u-m-t-32 flex flex-between u-p-t-20 c-666 font-400 u-font-30" :class="tabOpt == 'left'? 'tab-left' : 'tab-right'">
 						<view class="flex-1 flex flex-center" :class="tabOpt == 'left'? 'common' : ''" @tap="selectTab('left')">
 							常用
@@ -281,6 +281,7 @@ import { getCutSheepInventory, getHistorySheepInventory, bigSheepManage } from '
 				cartList:[],
 				// 页面类型 add:添加羊羔, lessen:减少羊羔, bigSheep:大羊管理
 				type:'',
+				// 按钮加载状态
 				btnLoading:false,
 			}
 		},
@@ -322,9 +323,15 @@ import { getCutSheepInventory, getHistorySheepInventory, bigSheepManage } from '
 				// },1000)
 
 				// 获取羊只品种库存列表
-				//  type 类型：1-大羊 2-羊羔
+				// type 类型：1-大羊 2-羊羔
+				// sfDate 1 不需要数据统计
 				const params = {
 					type: 1,
+					sfDate:1
+				}
+				// 如果有搜索内容，则添加到参数中
+				if(this.searchContent){
+					params.categoryName = this.searchContent
 				}
 				if(this.tabOpt == 'left'){
 					// 常用羊只品种库存列表
@@ -385,7 +392,9 @@ import { getCutSheepInventory, getHistorySheepInventory, bigSheepManage } from '
 				// 显示弹窗
 				this.itemShow = true
 			},
-			// 添加到羊羔购物车
+			/**
+			 * 添加到羊羔购物车
+			 */ 
 			addConfirm(){
 				// 判断输入框是否有值
 				if(this.maleCount <= 0 && this.femaleCount <= 0){
@@ -419,7 +428,9 @@ import { getCutSheepInventory, getHistorySheepInventory, bigSheepManage } from '
 				// 关闭弹窗
 				this.itemShow = false
 			},
-			// 确认修改羊羔
+			/**
+			 * 确认修改羊羔
+			 */ 
 			changeSheep(){
 				this.timeShow = false
 				if(this.cartList.length === 0){
@@ -454,7 +465,19 @@ import { getCutSheepInventory, getHistorySheepInventory, bigSheepManage } from '
 					})
 				}
 			},
-			// 字符串变为数字
+			/**
+			 * 根据名字搜索
+			 * @param e 搜索框输入内容
+			 */
+			search(e){
+				console.log('e', e);
+				this.queryList(1, 10)
+			},
+			/**
+			 * 将字符串变为数字 
+			 * @param str 字符串
+			 * @returns {number} 返回数字，如果字符串为空或null或undefined，则返回0
+			 */ 
 			toNumber(str) {
 				if(str !== '' && str !== null && str !== undefined) return Number(str)
 				else return 0

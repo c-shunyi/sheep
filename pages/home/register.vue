@@ -5,7 +5,7 @@
 				<navbar title="羔羊添加登记" v-if="type == 'add'"></navbar>
 				<navbar title="羔羊减少登记" v-if="type == 'lessen'"></navbar>
 				<view class="u-px-24 u-p-t-24">
-					<u-search placeholder="请输入内容" v-model="searchContent" :actionStyle="actionStyle"></u-search>
+					<u-search placeholder="请输入内容" v-model="searchContent" :actionStyle="actionStyle" @search="search" @custom="search"></u-search>
 					<view class="tab u-m-t-32 flex flex-between u-p-t-20 c-666 font-400 u-font-30" :class="tabOpt == 'left'? 'tab-left' : 'tab-right'">
 						<view class="flex-1 flex flex-center" :class="tabOpt == 'left'? 'common' : ''" @tap="selectTab('left')">
 							常用
@@ -126,14 +126,14 @@
 		        </view> -->
 		    </view>
 		</u-popup>
-		<u-popup :show="itemShow" @close="itemShow = false" round="32rpx">
+		<u-popup :show="itemShow" @close="itemClose" round="32rpx">
 		    <view>
 		        <view class="u-py-30 u-px-48 flex flex-between">
 		        	<view style="width: 48rpx;"></view>
 					<view class="font-600 c-333 u-font-34">
 						请选择公母数量
 					</view>
-					<u--image :src="$fullLink('icon-close2.png')" width="48rpx"  height="48rpx" @click="itemShow = false"></u--image>
+					<u--image :src="$fullLink('icon-close2.png')" width="48rpx"  height="48rpx" @click="itemClose"></u--image>
 		        </view>
 				<view class="u-m-t-50 flex flex-center">
 					<u--image :src="currentItem.categoryImage" width="160rpx"  height="160rpx" radius="8rpx"></u--image>
@@ -378,9 +378,16 @@ import { getHistorySheepInventory, getCutSheepInventory, addLambSheep, reduceLam
 				// 	this.eweShow = true
 				// },1000)
 				
-				// 获取羊只品种库存列表
+				// 获取羊只品种库存列表 
+				// type 1-大羊 2-羊羔
+				// sfDate 1 不需要数据统计
 				const params = {
 					type: 2,
+					sfDate:1
+				}
+				// 如果有搜索内容，则添加到参数中
+				if(this.searchContent){
+					params.categoryName = this.searchContent
 				}
 				if(this.tabOpt == 'left'){
 					// 常用羊只品种库存列表
@@ -432,31 +439,45 @@ import { getHistorySheepInventory, getCutSheepInventory, addLambSheep, reduceLam
 			// 添加到羊羔购物车
 			addConfirm(){
 				// 1.校验
+				// 校验是否为数字
+				if(isNaN(this.maleCount) || isNaN(this.femaleCount)){
+					uni.$u.toast('请输入合法的数字')
+					return
+				}
 				// 判断输入框是否有值
 				if(this.maleCount <= 0 && this.femaleCount <= 0){
 					uni.$u.toast('请至少选择一只羊')
 					return
 				}
-				// 校验是否为大于0的数字
-				if(!this.toNumber(this.maleCount) || !this.toNumber(this.femaleCount)){
-					uni.$u.toast('请输入正确的数字')
-					return
-				}
+				let hasInvalid = false
+
 				// 2.判断购物车是否已存在该品类
 				let index = this.cartList.findIndex(it => it.categoryId === this.currentItem.categoryId)
 				if(index !== -1){
-					// 如果存在，更新数量
-					this.cartList[index].maleCount += this.toNumber(this.maleCount)
-					this.cartList[index].femaleCount += this.toNumber(this.femaleCount)
+					// 如果存在
+					// 判断是否大于库存
+					if(this.maleCount + this.cartList[index].maleCount > this.currentItem.maleCount || this.femaleCount + this.cartList[index].femaleCount > this.currentItem.femaleCount){
+						uni.$u.toast('超出库存数量，请核对已选择数量')
+					}else{ 
+						// 更新数量
+						this.cartList[index].maleCount += this.toNumber(this.maleCount)
+						this.cartList[index].femaleCount += this.toNumber(this.femaleCount)
+					}
 				}
 				if(index == -1){
-					// 如果不存在，更新数量
-					let item = {
-						...this.currentItem,
-						maleCount:this.toNumber(this.maleCount),
-						femaleCount:this.toNumber(this.femaleCount)
+					// 如果不存在
+					// 判断是否大于库存
+					if(this.maleCount > this.currentItem.maleCount || this.femaleCount > this.currentItem.femaleCount){
+						uni.$u.toast('超出库存数量，请核对库存')
+					}else{
+						// 更新数量
+						let item = {
+							...this.currentItem,
+							maleCount:this.toNumber(this.maleCount),
+							femaleCount:this.toNumber(this.femaleCount)
+						}
+						this.cartList.push(item)
 					}
-					this.cartList.push(item)
 				}
 				// 3.清空输入框
 				this.maleCount = 0
@@ -491,6 +512,7 @@ import { getHistorySheepInventory, getCutSheepInventory, addLambSheep, reduceLam
 					})
 				}else if(this.type === 'lessen'){
 					// 处理减少羊羔的逻辑
+					// 校验需要减少的羊羔是否数量大于0，以及减少对应的数量后数量时候大于等于0
 					// 这里可以根据实际需求进行处理
 					reduceLambSheep(params).then(res=>{
 						uni.$u.toast('减少成功')
@@ -502,6 +524,24 @@ import { getHistorySheepInventory, getCutSheepInventory, addLambSheep, reduceLam
 						this.btnLoading = false
 					})
 				}
+			},
+			/**
+			 * 	根据名字搜索
+			 * @param e 搜索框输入内容
+			 */
+			search(e){
+				console.log('e', e);
+				this.queryList(1, 10)
+			},
+			/**
+			 * 关闭弹窗
+			 */
+			itemClose(){
+				// 关闭选择品类弹窗
+				this.itemShow = false
+				// 清空输入框
+				this.maleCount = 0
+				this.femaleCount = 0
 			},
 			// 字符串变为数字
 			toNumber(str) {

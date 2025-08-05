@@ -72,26 +72,26 @@ import { getRecordList } from '@/common/request/api/user.js'
 				}).catch(()=>{
 					this.$refs.paging.completeByTotal([],0);
 				})
-				setTimeout(()=>{
-					let list = []
-					for(let i=1;i<=10;i++){
-						list.push({
-							details:[],
-							operationType:uni.$u.random(1, 2),
-							totalNum:uni.$u.random(1, 99999),
-						})
-						for(let f=1;f<=3;f++){
-							list[i-1].details.push({
-								categoryImage:'https://env-00jxtkgouyh5.normal.cloudstatic.cn/public/avatarImg.jpg',
-								categoryName:'羊的品类' + f,
-								maleChange:uni.$u.random(1, 99999),
-								femaleChange:uni.$u.random(1, 99999),
-								categoryId:''+i+f
-							})
-						}
-					}
-					this.$refs.paging.completeByTotal(list,list.length);
-				},1000)
+				// setTimeout(()=>{
+				// 	let list = []
+				// 	for(let i=1;i<=10;i++){
+				// 		list.push({
+				// 			details:[],
+				// 			operationType:uni.$u.random(1, 2),
+				// 			totalNum:uni.$u.random(1, 99999),
+				// 		})
+				// 		for(let f=1;f<=3;f++){
+				// 			list[i-1].details.push({
+				// 				categoryImage:'https://env-00jxtkgouyh5.normal.cloudstatic.cn/public/avatarImg.jpg',
+				// 				categoryName:'羊的品类' + f,
+				// 				maleChange:uni.$u.random(1, 99999),
+				// 				femaleChange:uni.$u.random(1, 99999),
+				// 				categoryId:''+i+f
+				// 			})
+				// 		}
+				// 	}
+				// 	this.$refs.paging.completeByTotal(list,list.length);
+				// },1000)
 			}
 		}
 	}
