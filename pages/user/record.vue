@@ -23,7 +23,7 @@
             <view class="flex flex-center">
               <u--image
                 :src="
-                  item.type == 1
+                  item.operationType == 1
                     ? $fullLink('icon-add2.png')
                     : $fullLink('icon-less.png')
                 "
@@ -31,13 +31,13 @@
                 height="32rpx"
               ></u--image>
               <view class="u-font-32 c-333 u-m-l-12">
-                羊羔增加{{ item.totalNum }}只
+                羊羔增加{{ item.motherSheepCount }}只
               </view>
             </view>
             <view class="flex flex-center">
               <u-icon name="clock" color="#333333" size="32rpx"></u-icon>
               <view class="u-font-32 c-333 u-m-l-12 font-400">
-                {{ $u.timeFormat(new Date(), "yyyy-mm-dd") }}
+                {{ $u.timeFormat(item.createTime, "yyyy-mm-dd") }}
               </view>
             </view>
           </view>
@@ -56,7 +56,7 @@
               ></u--image>
               <view class="u-m-l-24 flex-1">
                 <view class="u-font-32 c-333 u-m-b-24">
-                  {{ it.categoryName }}
+                  {{ it.categoryName || "-" }}
                 </view>
                 <view class="flex align-center">
                   <view class="flex align-center flex-1">
@@ -92,39 +92,22 @@ export default {
     };
   },
   methods: {
+    /**
+     * @description 获取记录列表
+     * @author c_shunyi 2025-08-05 17:40:51
+     */
     queryList(pageNo, pageSize) {
       getRecordList({
         page: pageNo,
         size: pageSize,
       })
         .then((res) => {
-          console.log(res, "res");
           let list = res.data.list || [];
           this.$refs.paging.completeByTotal(list, list.length);
         })
         .catch(() => {
           this.$refs.paging.completeByTotal([], 0);
         });
-      // setTimeout(()=>{
-      // 	let list = []
-      // 	for(let i=1;i<=10;i++){
-      // 		list.push({
-      // 			details:[],
-      // 			operationType:uni.$u.random(1, 2),
-      // 			totalNum:uni.$u.random(1, 99999),
-      // 		})
-      // 		for(let f=1;f<=3;f++){
-      // 			list[i-1].details.push({
-      // 				categoryImage:'https://env-00jxtkgouyh5.normal.cloudstatic.cn/public/avatarImg.jpg',
-      // 				categoryName:'羊的品类' + f,
-      // 				maleChange:uni.$u.random(1, 99999),
-      // 				femaleChange:uni.$u.random(1, 99999),
-      // 				categoryId:''+i+f
-      // 			})
-      // 		}
-      // 	}
-      // 	this.$refs.paging.completeByTotal(list,list.length);
-      // },1000)
     },
   },
 };
