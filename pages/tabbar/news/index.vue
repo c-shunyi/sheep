@@ -16,6 +16,7 @@
         </view>
         <view
           class="epidemic-prevention u-py-18 u-px-48 flex align-center u-m-b-24 b-radius-16 overflow-hidden"
+          @click="openPopup"
         >
           <u--image
             :src="$fullLink('icon-epidemic-prevention.png')"
@@ -98,6 +99,23 @@
         <!-- </view> -->
       </view>
     </z-paging>
+    <u-modal
+      :show="resultShow"
+      title="测试功能 暂未开放"
+      negativeTop="100rpx"
+      width="546rpx"
+    >
+      <view class="flex flex-center" slot="confirmButton">
+        <view style="width: 300rpx">
+          <u-button
+            text="确定"
+            shape="circle"
+            color="linear-gradient(to right,#aee96d,#a2e37c,#96de88,#8fda90)"
+            @click="confirmResult"
+          ></u-button>
+        </view>
+      </view>
+    </u-modal>
   </view>
 </template>
 
@@ -116,6 +134,7 @@ export default {
       swiperList: [],
       // 是否获取数据中
       isGettingData: false,
+      resultShow: false,
     };
   },
   onLoad() {
@@ -219,6 +238,20 @@ export default {
         ];
         this.$refs.paging.completeByTotal(list, 2);
       }, 1000);
+    },
+    /**
+     * @description 打开弹窗
+     * @author c_shunyi 2025-08-06 17:35:55
+     */
+    openPopup() {
+      this.resultShow = true;
+    },
+    /**
+     * @description 确认结果
+     * @author c_shunyi 2025-08-06 17:38:14
+     */
+    confirmResult() {
+      this.resultShow = false;
     },
   },
 };

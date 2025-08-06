@@ -106,8 +106,7 @@ export default {
       swiperList: [
         "https://env-00jxtkgouyh5.normal.cloudstatic.cn/lcApp/slideshow1.png",
       ],
-      announcement:
-        "这是一条滚动的文字提示这是一条滚动的文字提示这是一条滚动的文字提示这是一条滚动的文字提示…",
+      announcement: "",
       registerList: [
         {
           icon: "icon-add.png",
@@ -139,6 +138,7 @@ export default {
     if (store.state.isFromAuthentication) {
       this.resultShow = true;
     }
+    this.getInfoMemberId();
   },
   onLoad() {
     this.init();
@@ -150,7 +150,6 @@ export default {
      */
     async init() {
       this.getMessageContent();
-      this.getInfoMemberId();
     },
     getUserInfo() {
       this.authenticationShow = true;
