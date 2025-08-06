@@ -31,7 +31,8 @@
                 height="32rpx"
               ></u--image>
               <view class="u-font-32 c-333 u-m-l-12">
-                羊羔增加{{ item.motherSheepCount }}只
+                羊羔{{ item.operationType == 1 ? "增加" : "减少" }}
+                {{ item.motherSheepCount || 0 }}只
               </view>
             </view>
             <view class="flex flex-center">
@@ -103,7 +104,7 @@ export default {
       })
         .then((res) => {
           let list = res.data.list || [];
-          this.$refs.paging.completeByTotal(list, list.length);
+          this.$refs.paging.completeByTotal(list, res.data.totalCount);
         })
         .catch(() => {
           this.$refs.paging.completeByTotal([], 0);

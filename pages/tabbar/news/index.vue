@@ -154,9 +154,7 @@ export default {
       getNewList(params)
         .then((res) => {
           let list = res.data.list;
-          console.log(list, "list");
-
-          this.$refs.paging.completeByTotal(list, res.data.totalPage);
+          this.$refs.paging.completeByTotal(list, res.data.totalCount);
         })
         .catch(() => {
           this.$refs.paging.completeByTotal([], 0);

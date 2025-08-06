@@ -21,12 +21,6 @@
         </view>
         <u-parse :content="content"></u-parse>
       </view>
-      <template #bottom>
-        <view class="u-p-24">
-          <u-button text="返回" shape="circle" @click="$navBack()"></u-button>
-        </view>
-        <view :style="[{ height: bottom + 'px' }]"></view>
-      </template>
     </z-paging>
   </view>
 </template>
@@ -36,10 +30,10 @@ import { getNewDetails } from "@/common/request/api/news.js";
 export default {
   data() {
     return {
-      content: "富文本富文本",
+      content: "",
       createTime: "",
       newsId: "",
-      title: "标题",
+      title: "",
     };
   },
   computed: {
