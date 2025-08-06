@@ -616,6 +616,14 @@ export default {
         uni.$u.toast("羊库存最小为0");
         return;
       }
+      // 检验是否为正整数
+      if (
+        !Number.isInteger(this.maleCount) ||
+        !Number.isInteger(this.femaleCount)
+      ) {
+        uni.$u.toast("请输入正整数");
+        return;
+      }
       // 2.判断购物车是否已存在该品类
       let index = this.cartList.findIndex(
         (it) => it.categoryId === this.currentItem.categoryId

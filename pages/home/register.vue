@@ -102,7 +102,7 @@
             v-if="type == 'add'"
             class="flex justify-end c-ED6A0C u-font-32"
           >
-            共用{{ toNumber(motherSheepCount) }}只母羊生产
+            共用{{ motherSheepTotal }}只母羊生产
           </view>
         </view>
         <view class="u-px-32 u-py-20 flex flex-between">
@@ -164,7 +164,7 @@
               border-radius: 50rpx;
             "
           >
-            <u-number-box v-model="motherSheepCount" :min="0">
+            <u-number-box v-model="motherSheepCount" :min="0" :max="100">
               <view class="minus-plus flex flex-center" slot="minus">
                 <u-icon name="minus" size="54rpx" color="#ffffff" bold></u-icon>
               </view>
@@ -528,6 +528,29 @@ export default {
       });
       return num;
     },
+    // 产羔母羊数量
+    motherSheepTotal() {
+      let num = 0;
+      // 添加一个标识
+      let flag = false;
+      if (this.motherSheepCount <= 0) {
+        flag = true;
+      }
+      // 检验是否为数字
+      if (isNaN(this.motherSheepCount)) {
+        flag = true;
+      }
+      // 检验是否为正整数
+      if (this.motherSheepCount && !Number.isInteger(this.motherSheepCount)) {
+        flag = true;
+      }
+      if (flag) {
+        num = 0;
+      } else {
+        num = this.motherSheepCount;
+      }
+      return num;
+    },
   },
   onLoad(options) {
     this.init(options);
@@ -549,8 +572,24 @@ export default {
     },
     // 确认产羔母羊数量
     confirmDoeSheep() {
-      if (this.motherSheepCount <= 0) {
-        uni.$u.toast("产羔母羊数量错误！");
+      // 检验是否为数字
+      if (isNaN(this.motherSheepCount)) {
+        uni.$u.toast("请输入合法的数字!");
+        return;
+      }
+      // 校验是否大于等于零
+      if (this.motherSheepCount < 0) {
+        uni.$u.toast("请输入正整数！");
+        return;
+      }
+      // 校验是否等于零
+      if (this.motherSheepCount == 0) {
+        uni.$u.toast("至少输入一只产羔母羊");
+        return;
+      }
+      // 检验是否为正整数
+      if (this.motherSheepCount && !Number.isInteger(this.motherSheepCount)) {
+        uni.$u.toast("请输入正整数！");
         return;
       }
       this.eweShow = false;
@@ -650,8 +689,21 @@ export default {
         return;
       }
       // 判断输入框是否有值
-      if (this.maleCount <= 0 && this.femaleCount <= 0) {
+      if (this.maleCount == 0 && this.femaleCount == 0) {
         uni.$u.toast("请至少选择一只羊");
+        return;
+      }
+      // 判断输入框是否大于0
+      if (this.maleCount < 0 || this.femaleCount < 0) {
+        uni.$u.toast("请输入大于0的正整数");
+        return;
+      }
+      // 检验是否为正整数
+      if (
+        !Number.isInteger(this.maleCount) ||
+        !Number.isInteger(this.femaleCount)
+      ) {
+        uni.$u.toast("请输入正整数");
         return;
       }
       // 2.判断购物车是否已存在该品类
@@ -691,8 +743,21 @@ export default {
         return;
       }
       // 判断输入框是否有值
-      if (this.maleCount <= 0 && this.femaleCount <= 0) {
+      if (this.maleCount == 0 && this.femaleCount == 0) {
         uni.$u.toast("请至少选择一只羊");
+        return;
+      }
+      // 判断输入框是否有值
+      if (this.maleCount < 0 && this.femaleCount < 0) {
+        uni.$u.toast("请输入大于0的正整数");
+        return;
+      }
+      // 检验是否为正整数
+      if (
+        !Number.isInteger(this.maleCount) ||
+        !Number.isInteger(this.femaleCount)
+      ) {
+        uni.$u.toast("请输入正整数");
         return;
       }
       // 2.判断购物车是否已存在该品类
