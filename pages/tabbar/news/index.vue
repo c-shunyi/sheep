@@ -168,9 +168,9 @@ export default {
      * @description 前往新闻详情
      * @author c_shunyi 2025-08-05 17:22:05
      */
-    goNewsDetails() {
+    goNewsDetails(it) {
       this.$u.route({
-        url: "/pages/news/particulars",
+        url: `/pages/news/particulars?newsId=${it.systemMessageDTO.messageId}`,
       });
     },
     /**
