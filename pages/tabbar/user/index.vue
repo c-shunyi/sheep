@@ -171,7 +171,7 @@ export default {
           uni.$u.toast("身份信息");
           break;
         case "data":
-          uni.$u.toast("数据管理");
+          this.$navTo("/pages/user/dataManagement");
           break;
         case "service":
           this.$navTo("/pages/user/userFeedback");
